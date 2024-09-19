@@ -1,3 +1,16 @@
+authd (0.3.4~ppa4) noble; urgency=medium
+
+  * Fix an issue which could cause authd to time out during startup
+  * Choose UIDs and GIDs from a wider range to reduce the probability of
+    collisions
+  * Rate limit regeneration of QR codes to avoid errors
+  * Better error messages
+  * Avoid excessive warning messages in the logs
+  * More debug messages
+  * Update dependencies
+
+ --  <adrian.dombeck@canonical.com>  Thu, 19 Sep 2024 22:52:14 +0200
+
 authd (0.3.3) noble; urgency=medium
 
   * Fix NSS module not being readded to nsswitch.conf on reinstall
