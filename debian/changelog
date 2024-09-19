@@ -1,3 +1,9 @@
+authd (0.3.4~ppa5) noble; urgency=medium
+
+  * Fix build issues
+
+ --  <adrian.dombeck@canonical.com>  Fri, 20 Sep 2024 00:03:05 +0200
+
 authd (0.3.4~ppa4) noble; urgency=medium
 
   * Fix an issue which could cause authd to time out during startup
