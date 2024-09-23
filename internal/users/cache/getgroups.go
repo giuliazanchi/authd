@@ -31,6 +31,41 @@ func (c *Cache) GroupByName(name string) (GroupDB, error) {
 	return getGroup(c, groupByNameBucketName, name)
 }
 
+// GroupsOfUser returns all groups of a given user or an error if the database is corrupted.
+func (c *Cache) GroupsOfUser(uid uint32) ([]GroupDB, error) {
+	var groups []GroupDB
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	err := c.db.View(func(tx *bbolt.Tx) error {
+		buckets, err := getAllBuckets(tx)
+		if err != nil {
+			return err
+		}
+
+		// Get group ids of the user.
+		groupsOfUser, err := getFromBucket[userToGroupsDB](buckets[userToGroupsBucketName], uid)
+		if err != nil {
+			return err
+		}
+
+		for _, gid := range groupsOfUser.GIDs {
+			g, err := getGroup(c, groupByIDBucketName, gid)
+			if err != nil {
+				return err
+			}
+			groups = append(groups, g)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return groups, nil
+}
+
 // AllGroups returns all groups or an error if the database is corrupted.
 func (c *Cache) AllGroups() (all []GroupDB, err error) {
 	c.mu.RLock()
