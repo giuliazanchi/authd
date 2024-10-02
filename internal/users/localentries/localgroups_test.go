@@ -1,4 +1,4 @@
-package localgroups_test
+package localentries_test
 
 import (
 	"os"
@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/ubuntu/authd/internal/testutils"
-	"github.com/ubuntu/authd/internal/users/localgroups"
-	localgroupstestutils "github.com/ubuntu/authd/internal/users/localgroups/testutils"
+	"github.com/ubuntu/authd/internal/users/localentries"
+	localgroupstestutils "github.com/ubuntu/authd/internal/users/localentries/testutils"
 )
 
 func TestUpdateLocalGroups(t *testing.T) {
@@ -73,7 +73,7 @@ func TestUpdateLocalGroups(t *testing.T) {
 				groupFilePath, destCmdsFile,
 			}
 
-			err := localgroups.Update(tc.username, tc.groups, localgroups.WithGroupPath(groupFilePath), localgroups.WithGpasswdCmd(cmdArgs))
+			err := localentries.Update(tc.username, tc.groups, localentries.WithGroupPath(groupFilePath), localentries.WithGpasswdCmd(cmdArgs))
 			if tc.wantErr {
 				require.Error(t, err, "UpdateLocalGroups should have failed")
 			} else {
@@ -121,12 +121,12 @@ func TestCleanLocalGroups(t *testing.T) {
 				tc.getUsersReturn = []string{"myuser", "otheruser", "otheruser2", "otheruser3", "otheruser4"}
 			}
 
-			cleanupOptions := []localgroups.Option{
-				localgroups.WithGpasswdCmd(gpasswdCmd),
-				localgroups.WithGroupPath(groupFilePath),
-				localgroups.WithGetUsersFunc(func() ([]string, error) { return tc.getUsersReturn, nil }),
+			cleanupOptions := []localentries.Option{
+				localentries.WithGpasswdCmd(gpasswdCmd),
+				localentries.WithGroupPath(groupFilePath),
+				localentries.WithGetUsersFunc(func() ([]string, error) { return tc.getUsersReturn, nil }),
 			}
-			err := localgroups.Clean(cleanupOptions...)
+			err := localentries.Clean(cleanupOptions...)
 			if tc.wantErr {
 				require.Error(t, err, "CleanupLocalGroups should have failed")
 			} else {
@@ -178,11 +178,11 @@ func TestCleanUserFromLocalGroups(t *testing.T) {
 				gpasswdCmd = append(gpasswdCmd, "gpasswdfail")
 			}
 
-			cleanupOptions := []localgroups.Option{
-				localgroups.WithGpasswdCmd(gpasswdCmd),
-				localgroups.WithGroupPath(groupFilePath),
+			cleanupOptions := []localentries.Option{
+				localentries.WithGpasswdCmd(gpasswdCmd),
+				localentries.WithGroupPath(groupFilePath),
 			}
-			err := localgroups.CleanUser(tc.username, cleanupOptions...)
+			err := localentries.CleanUser(tc.username, cleanupOptions...)
 			if tc.wantErr {
 				require.Error(t, err, "CleanUserFromLocalGroups should have failed")
 			} else {
