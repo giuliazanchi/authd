@@ -5,3 +5,4 @@ wait: ""
 entry: entry_type
 content: ""
 code: ""
+rendersqrcode: null
