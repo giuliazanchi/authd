@@ -100,10 +100,11 @@ func (s Service) GetPreviousBroker(ctx context.Context, req *authd.GPBRequest) (
 	// except if the broker is the local broker, because then the decision to use the local broker should be made each
 	// time the user tries to log in, based on whether the user is provided by any other NSS service.
 	if brokerID != brokers.LocalBrokerName {
-		if err = s.brokerManager.SetDefaultBrokerForUser(brokerID, req.GetUsername()); err != nil {
-			log.Warningf(ctx, "Last broker used by %q is not available, letting the user selecting one: %v", req.GetUsername(), err)
-			return &authd.GPBResponse{}, nil
-		}
+		return &authd.GPBResponse{PreviousBroker: brokerID}, nil
+	}
+	if err = s.brokerManager.SetDefaultBrokerForUser(brokerID, req.GetUsername()); err != nil {
+		log.Warningf(ctx, "Last broker used by %q is not available, letting the user selecting one: %v", req.GetUsername(), err)
+		return &authd.GPBResponse{}, nil
 	}
 
 	return &authd.GPBResponse{
