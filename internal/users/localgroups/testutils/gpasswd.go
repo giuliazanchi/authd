@@ -1,7 +1,6 @@
+// Package localgrouptestutils export users test functionalities used by other packages to change cmdline and group file.
 package localgrouptestutils
 
-//nolint:gci // We import unsafe as it is needed for go:linkname, but the nolint comment confuses gofmt and it adds
-// a blank space between the imports, which creates problems with gci so we need to ignore it.
 import (
 	"fmt"
 	"os"
@@ -10,11 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	//nolint:revive,nolintlint // needed for go:linkname, but only used in tests. nolintlint as false positive then.
-	_ "unsafe"
-
 	"github.com/stretchr/testify/require"
 	"github.com/ubuntu/authd/internal/testutils"
+	"github.com/ubuntu/authd/internal/users/localgroups"
 )
 
 // Mockgpasswd is the gpasswd mock.
@@ -76,13 +73,12 @@ func Mockgpasswd(_ *testing.T) {
 func SetupGPasswdMock(t *testing.T, groupsFilePath string) string {
 	t.Helper()
 
-	origin := defaultOptions
-	t.Cleanup(func() { defaultOptions = origin })
+	t.Cleanup(localgroups.Z_ForTests_RestoreDefaultOptions)
 
-	SetGroupPath(groupsFilePath)
+	localgroups.Z_ForTests_SetGroupPath(groupsFilePath)
 
 	destCmdsFile := filepath.Join(t.TempDir(), "gpasswd.output")
-	SetGpasswdCmd([]string{"env", "GO_WANT_HELPER_PROCESS=1",
+	localgroups.Z_ForTests_SetGpasswdCmd([]string{"env", "GO_WANT_HELPER_PROCESS=1",
 		os.Args[0], "-test.run=TestMockgpasswd", "--",
 		groupsFilePath, destCmdsFile,
 	})
